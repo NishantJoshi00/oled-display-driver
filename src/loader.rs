@@ -1,16 +1,13 @@
-
 #[cfg(feature = "sim")]
 pub mod disp {
-    use embedded_graphics::{prelude::*, pixelcolor::BinaryColor};
+    use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
     use std::ops::{Deref, DerefMut};
 
-    use embedded_graphics_simulator::{SimulatorDisplay, OutputSettingsBuilder, Window};
-
-    use super::*;
+    use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
 
     pub struct MockDisplay {
         inner: SimulatorDisplay<BinaryColor>,
-        window: Window
+        window: Window,
     }
 
     impl Deref for MockDisplay {
@@ -25,7 +22,7 @@ pub mod disp {
             let out_set = OutputSettingsBuilder::new().build();
             MockDisplay {
                 inner: SimulatorDisplay::<BinaryColor>::new(Size::new(128, 64)),
-                window: Window::new("Simulator", &out_set)
+                window: Window::new("Simulator", &out_set),
             }
         }
         pub fn flush(&mut self) -> Result<(), Box<dyn std::error::Error>> {
@@ -48,8 +45,6 @@ pub mod disp {
     }
 }
 
-
-
 #[cfg(feature = "board")]
 pub mod disp {
     use ssd1306::prelude::*;
@@ -68,21 +63,33 @@ pub mod disp {
 
     impl<T> ops::Deref for Wrapper<T> {
         type Target = T;
-        fn deref(&self) -> &Self::Target { &self.0 }
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
     }
 
     impl<T> ops::DerefMut for Wrapper<T> {
-        fn deref_mut(&mut self) -> &mut Self::Target { &mut self.0 }
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.0
+        }
     }
 
-
-    pub fn get_display() -> Result<Wrapper<ssd1306::Ssd1306<I2CInterface<rppal::i2c::I2c>, DisplaySize128x64, ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>>>, Box<dyn std::error::Error>> {
-
+    pub fn get_display() -> Result<
+        Wrapper<
+            ssd1306::Ssd1306<
+                I2CInterface<rppal::i2c::I2c>,
+                DisplaySize128x64,
+                ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+            >,
+        >,
+        Box<dyn std::error::Error>,
+    > {
         let i2c_rpi_interface = rppal::i2c::I2c::new()?;
         let interface = ssd1306::I2CDisplayInterface::new(i2c_rpi_interface);
-        let mut display = ssd1306::Ssd1306::new(interface, DisplaySize128x64, DisplayRotation::Rotate180).into_buffered_graphics_mode();
+        let mut display =
+            ssd1306::Ssd1306::new(interface, DisplaySize128x64, DisplayRotation::Rotate180)
+                .into_buffered_graphics_mode();
         display.init().map_err(|err| HalError(err))?;
         Ok(Wrapper(display))
     }
 }
-

@@ -1,5 +1,7 @@
 mod loader;
 
+use std::time::Instant;
+
 use embedded_graphics::{
     image::{Image, ImageRaw},
     pixelcolor::BinaryColor,
@@ -20,6 +22,7 @@ fn main() {
     display.flush().unwrap();
     let mut delta = Point::new(1, 0);
     loop {
+        let start = Instant::now();
         im.translate_mut(delta.clone());
 
         match (delta.x, im.bounding_box().top_left.x) {
@@ -30,5 +33,7 @@ fn main() {
         display.clear();
         im.draw(&mut *display).unwrap();
         display.flush().unwrap();
+        let total = Instant::now() - start;
+        println!("Time Taken: {}ms", total.as_millis());
     }
 }

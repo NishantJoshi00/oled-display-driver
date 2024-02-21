@@ -16,7 +16,6 @@ const CHAR_LIMIT: usize = 20;
 
 // If the text is longer than CHAR_LIMIT, wrap it, do a word wrap
 fn wrap_text(text: String) -> String {
-    let words: Vec<&str> = text.split_whitespace().collect();
     let mut wrapped = String::new();
     let mut count = 0;
     text.split_whitespace().for_each(|word| {
@@ -25,6 +24,7 @@ fn wrap_text(text: String) -> String {
             count = 0;
         }
         wrapped.push_str(word);
+        wrapped.push(' ');
         count += word.len();
     });
     wrapped

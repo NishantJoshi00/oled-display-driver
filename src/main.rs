@@ -4,16 +4,31 @@ use std::time::Instant;
 
 use embedded_graphics::{
     image::{Image, ImageRaw},
-    mono_font::{
-        ascii,
-        MonoTextStyle,
-    },
+    mono_font::{ascii, MonoTextStyle},
     pixelcolor::{BinaryColor, Rgb565},
     prelude::*,
     transform::Transform,
 };
 
 use loader::disp::get_display;
+
+const CHAR_LIMIT: usize = 20;
+
+// If the text is longer than CHAR_LIMIT, wrap it, do a word wrap
+fn wrap_text(text: String) -> String {
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let mut wrapped = String::new();
+    let mut count = 0;
+    text.split_whitespace().for_each(|word| {
+        if count + word.len() > CHAR_LIMIT {
+            wrapped.push('\n');
+            count = 0;
+        }
+        wrapped.push_str(word);
+        count += word.len();
+    });
+    wrapped
+}
 
 fn main() {
     let mut display = get_display().unwrap();
@@ -35,6 +50,7 @@ fn main() {
 
     let mut buf = String::new();
     std::io::stdin().read_line(&mut buf).unwrap();
+    let buf = wrap_text(buf);
 
     // create text object
     let text = embedded_graphics::text::Text::new(&buf, start, style);
@@ -44,18 +60,18 @@ fn main() {
     display.flush().unwrap();
     // let mut delta = Point::new(1, 0);
     // loop {
-        //     // let start = Instant::now();
-        //     // im.translate_mut(delta.clone());
+    //     // let start = Instant::now();
+    //     // im.translate_mut(delta.clone());
 
-        //     // match (delta.x, im.bounding_box().top_left.x) {
-        //     //     (1, x) if x > 64 => delta = Point::new(-1, 0),
-        //     //     (-1, x) if x < 0 => delta = Point::new(1, 0),
-        //     //     (_, _) => {}
-        //     // }
-        //     // display.clear();
-        //     // im.draw(&mut *display).unwrap();
-        //     // display.flush().unwrap();
-        //     // let total = Instant::now() - start;
-        //     // println!("Time Taken: {}ms", total.as_millis());
+    //     // match (delta.x, im.bounding_box().top_left.x) {
+    //     //     (1, x) if x > 64 => delta = Point::new(-1, 0),
+    //     //     (-1, x) if x < 0 => delta = Point::new(1, 0),
+    //     //     (_, _) => {}
+    //     // }
+    //     // display.clear();
+    //     // im.draw(&mut *display).unwrap();
+    //     // display.flush().unwrap();
+    //     // let total = Instant::now() - start;
+    //     // println!("Time Taken: {}ms", total.as_millis());
     // }
 }

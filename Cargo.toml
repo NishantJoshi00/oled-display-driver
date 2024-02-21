@@ -4,21 +4,20 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[target.'cfg(target_os = "windows")'.features]
-default = [ "board" ]
 
 
 [features]
+default = [ "sim" ]
 board = ["dep:rppal", "dep:ssd1306"]
 sim = ["dep:embedded-graphics-simulator"]
 
 [dependencies]
 # Graphics library
-embedded-graphics = "0.7.1"
+embedded-graphics = "0.8.1"
 
 # RPi specific
-rppal = { version = "0.14.1", features = [ "hal" ], optional = true }
-ssd1306 = { version = "0.7.1", optional = true }
+rppal = { version = "0.17.1", features = [ "hal" ], optional = true }
+ssd1306 = { version = "0.8.4", optional = true }
 
 # graphics simulator for high performance systems
-embedded-graphics-simulator = { version = "0.4.0", optional = true }
+embedded-graphics-simulator = { version = "0.6.0", optional = true }
